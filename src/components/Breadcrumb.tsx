@@ -3,13 +3,13 @@ import { Dispatch, SetStateAction, MouseEvent } from 'react'
 
 interface BreadcrumbProps {
   path: Path[]
-  booksDate: Books[]
+  booksData: Books[]
   setSelectedRow: Dispatch<SetStateAction<Books | null>>
 }
 
-const Breadcrumb = ({ path, setSelectedRow, booksDate }: BreadcrumbProps) => {
+const Breadcrumb = ({ path, setSelectedRow, booksData }: BreadcrumbProps) => {
   const handleClick = (e: MouseEvent<HTMLElement>) => {
-    const findBook = booksDate.find((book) => book.title === e.currentTarget.textContent)
+    const findBook = booksData.find((book) => book.title === e.currentTarget.textContent)
     if (findBook) {
       setSelectedRow(findBook)
     }
@@ -23,7 +23,7 @@ const Breadcrumb = ({ path, setSelectedRow, booksDate }: BreadcrumbProps) => {
             <span
               id={item.id}
               onClick={handleClick}
-              className='bg-red-900	text-sm	text-white rounded-md p-1 mx-2 '
+              className='bg-red-900	text-sm	text-white rounded-md p-1 px-2 mx-2 '
             >
               {item.title}
             </span>

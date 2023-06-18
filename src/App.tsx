@@ -4,7 +4,7 @@ import { fetchBooks } from './components/util/http'
 import { Books, Path } from './interface'
 
 function App() {
-  const [booksDate, setBooksDate] = useState<Books[] | []>([])
+  const [booksData, setBooksData] = useState<Books[] | []>([])
   const [selectedRow, setSelectedRow] = useState<Books | null>(null)
   const [isModalOpen, setModalOpen] = useState(false)
   const [path, setPath] = useState<Path[]>([])
@@ -12,7 +12,7 @@ function App() {
   async function getBooks() {
     try {
       const books = await fetchBooks()
-      setBooksDate(books)
+      setBooksData(books)
     } catch (err) {
       alert(err)
     }
@@ -54,17 +54,25 @@ function App() {
               Dynamic table with row selection and breadcrumb.
             </h1>
           </header>
-          <Breadcrumb path={path} setSelectedRow={setSelectedRow} booksDate={booksDate} />
-          <div className='mx-auto max-w-7xl'>
-            <Table books={booksDate} selectRow={handleRowSelection} selectedRow={selectedRow} />
-            {isModalOpen && selectedRow && (
-              <BookCard
-                selectedBook={selectedRow}
-                setModalOpen={setModalOpen}
-                isModalOpen={isModalOpen}
-              />
-            )}
-          </div>
+          {booksData.length > 0 ? (
+            <>
+              <Breadcrumb path={path} setSelectedRow={setSelectedRow} booksData={booksData} />
+              <div className='mx-auto max-w-7xl'>
+                <Table books={booksData} selectRow={handleRowSelection} selectedRow={selectedRow} />
+                {isModalOpen && selectedRow && (
+                  <BookCard
+                    selectedBook={selectedRow}
+                    setModalOpen={setModalOpen}
+                    isModalOpen={isModalOpen}
+                  />
+                )}
+              </div>
+            </>
+          ) : (
+            <div className='flex center my-24 h-screen w-screen		'>
+              <p className='text-center'>Fetching data from server...</p>
+            </div>
+          )}
         </div>
         <footer className='py-2'>&copy; Kamila Dynysiuk</footer>
 
