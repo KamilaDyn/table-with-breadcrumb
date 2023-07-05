@@ -1,36 +1,34 @@
-import { Books, Path } from '../interface'
-import { Dispatch, SetStateAction, MouseEvent } from 'react'
+import { useContext, useMemo } from 'react'
+import { Link, useLocation } from 'react-router-dom'
+import { BooksContext } from '../store/books-context'
 
-interface BreadcrumbProps {
-  path: Path[]
-  booksData: Books[]
-  setSelectedRow: Dispatch<SetStateAction<Books | null>>
-}
+const Breadcrumb = () => {
+  const location = useLocation()
+  const { rowBook, loading } = useContext(BooksContext)
 
-const Breadcrumb = ({ path, setSelectedRow, booksData }: BreadcrumbProps) => {
-  const handleClick = (e: MouseEvent<HTMLElement>) => {
-    const findBook = booksData.find((book) => book.title === e.currentTarget.textContent)
-    if (findBook) {
-      setSelectedRow(findBook)
-    }
-  }
+  const crumbs = useMemo(() => {
+    let currentLink = ''
 
-  return (
-    <div className='my-4 w-full	'>
-      <nav className='flex justify-center items-center flex-wrap cursor-pointer '>
-        {path?.map((item, index) => (
-          <div key={item.id} className='my-1'>
-            <span
-              id={item.id}
-              onClick={handleClick}
-              className='bg-red-900	text-sm	text-white rounded-md p-1 px-2 mx-2 '
-            >
-              {item.title}
-            </span>
-            {index < path.length - 1 && <span className='text-red-700 text-lg'>/</span>}
+    return location.pathname
+      .split('/')
+      .filter((crumb) => crumb !== '')
+      .map((crumb) => {
+        const bookName = crumb === rowBook?.id ? rowBook?.title : crumb
+        currentLink += `/${crumb}`
+        return (
+          <div key={crumb}>
+            <Link to={currentLink}> / {bookName} </Link>
           </div>
-        ))}
-      </nav>
+        )
+      })
+  }, [location.pathname, rowBook?.id, rowBook?.title])
+  if (loading) {
+    return null
+  }
+  return (
+    <div className='flex my-4 w-full	'>
+      <Link to='/'>Home </Link>
+      {crumbs}
     </div>
   )
 }
