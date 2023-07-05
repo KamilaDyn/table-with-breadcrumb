@@ -1,89 +1,21 @@
-import { useCallback, useEffect, useState } from 'react'
-import { BookCard, Breadcrumb, Table } from './components'
-import { fetchBooks } from './components/util/http'
-import { Books, Path } from './interface'
+import { Breadcrumb } from './components'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import { Details, Home } from './Pages'
+import BooksContextProvider from './store/books-context'
 
 function App() {
-  const [booksData, setBooksData] = useState<Books[] | []>([])
-  const [selectedRow, setSelectedRow] = useState<Books | null>(null)
-  const [isModalOpen, setModalOpen] = useState(false)
-  const [path, setPath] = useState<Path[]>([])
-
-  async function getBooks() {
-    try {
-      const books = await fetchBooks()
-      setBooksData(books)
-    } catch (err) {
-      alert(err)
-    }
-  }
-  const handleRowSelection = (rowData: Books | null) => {
-    setSelectedRow(rowData)
-    setModalOpen(true)
-  }
-
-  useEffect(() => {
-    getBooks()
-  }, [])
-
-  const generateBreadcrumbPath = useCallback(() => {
-    if (selectedRow) {
-      const breadcrumbItem = {
-        id: selectedRow.id,
-        title: selectedRow.title,
-      }
-      const isInBreadcrumb = path.some((path) => path.id === breadcrumbItem.id)
-      if (!isInBreadcrumb) {
-        setPath((prevPath) => [...prevPath, breadcrumbItem])
-      }
-    }
-  }, [selectedRow])
-
-  useEffect(() => {
-    generateBreadcrumbPath()
-  }, [selectedRow, generateBreadcrumbPath])
-
   return (
-    <>
-      <div
-        className={`relative pt-12 px-4 lg:px-12   ${isModalOpen && 'overflow-hidden h-screen'} `}
-      >
-        <div className='pb-24'>
-          <header>
-            <h1 className='text-red-900 text-base	md:text-lg lg:text-2xl'>
-              Dynamic table with row selection and breadcrumb.
-            </h1>
-          </header>
-          {booksData.length > 0 ? (
-            <>
-              <Breadcrumb path={path} setSelectedRow={setSelectedRow} booksData={booksData} />
-              <div className='mx-auto max-w-7xl'>
-                <Table books={booksData} selectRow={handleRowSelection} selectedRow={selectedRow} />
-                {isModalOpen && selectedRow && (
-                  <BookCard
-                    selectedBook={selectedRow}
-                    setModalOpen={setModalOpen}
-                    isModalOpen={isModalOpen}
-                  />
-                )}
-              </div>
-            </>
-          ) : (
-            <div className='flex center my-24 h-screen w-screen		'>
-              <p className='text-center'>Fetching data from server...</p>
-            </div>
-          )}
+    <BooksContextProvider>
+      <Router>
+        <div className='flex-1 flex-col justify-center px-32	'>
+          <Breadcrumb />
+          <Routes>
+            <Route path='/' Component={Home} />
+            <Route path='/:id' Component={Details} />
+          </Routes>
         </div>
-        <footer className='py-2'>&copy; Kamila Dynysiuk</footer>
-
-        <div
-          onClick={() => setModalOpen(false)}
-          className={`w-full h-full absolute top-0 left-0 backdrop-opacity-10  bg-gray-900/10 none ${
-            isModalOpen ? 'block' : 'hidden'
-          } `}
-        />
-      </div>
-    </>
+      </Router>
+    </BooksContextProvider>
   )
 }
 
