@@ -39,11 +39,14 @@ export default function Details() {
           <h2 className='xl lg:text-2xl font-bold pb-2 text-white text-center'>{title}</h2>
         </div>
         <div className='px-6 py-4'>
-          <img
-            className={`${description && 'float-right'} ml-4`}
-            src={imageLinks.thumbnail}
-            alt={title}
-          />
+          {imageLinks.thumbnail && (
+            <img
+              className={`${description && 'float-right'} ml-4`}
+              src={imageLinks.thumbnail}
+              alt={title}
+            />
+          )}
+
           <ul>
             <ListItem spanText='Category' text={kind} />
             <ListItem spanText='Language' text={language} />
